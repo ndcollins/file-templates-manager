@@ -1,6 +1,6 @@
 const vscode = require('vscode');
 const os = require('os');
-const { join, dirname, basename, extname } = require('path');
+const { join, dirname, basename, extname, sep } = require('path');
 const { writeFile, exists, isDir, compile } = require('./utils');
 
 async function openFile(filename) {
@@ -76,6 +76,8 @@ module.exports = function(templatesManager) {
       if (name) {
         const template = await templatesManager.get(label);
         const dir = (await isDir(path)) ? path : dirname(path);
+        const dirParts = dir.split(sep);
+        const dirName = dirParts.pop();
         const filename = join(dir, `${name}${extension}`);
 
         const isExists = await exists(filename);
@@ -83,6 +85,7 @@ module.exports = function(templatesManager) {
           const params = Object.assign(
             {
               DIR: dir,
+              DIRNAME: dirName,
               FILE: `${name}${extension}`,
               FILE_PATH: filename,
               USER: os.userInfo().username,
